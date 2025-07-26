@@ -1,0 +1,9 @@
+return {
+  "ggandor/leap.nvim",
+  config = function()
+    local leap = require("leap")
+    leap.add_default_mappings() -- Or customize mappings here
+    -- Example: Set case sensitivity
+    -- leap.opts.case_sensitive = true
+  end,
+}
