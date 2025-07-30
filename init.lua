@@ -1022,5 +1022,10 @@ vim.cmd 'autocmd FileType markdown setlocal shiftwidth=2 softtabstop=2 expandtab
 -- Map <leader>f to search for the word "TODO"
 vim.api.nvim_set_keymap('n', '<leader>f', '/(fun)<CR>', { noremap = true, silent = true })
 
+-- Global multi-word search (available in all buffers)
+vim.keymap.set('n', '<leader>w', function()
+  require('search_utils').live_multiword_search()
+end, { desc = 'Multi-word search' })
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
