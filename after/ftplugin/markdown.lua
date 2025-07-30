@@ -1,7 +1,7 @@
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>f', '/(fun)<CR>zv', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>\\', 'zmzr', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ha', '?i:A_HAT<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hi', '?i:I_HAT<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>he', '?i:HE_HAT<CR>zv', { noremap = true, silent = true })
@@ -120,11 +120,6 @@ local function fuzzy_search_pattern(pattern, pattern_name, prompt_title)
   end
 end
 
--- Specific function for i: identifiers (backwards compatibility)
-local function fuzzy_search_i_identifiers()
-  fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers')
-end
-
 -- Create user commands
 -- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
 --   desc = 'Fuzzy search for i: identifiers in current buffer',
@@ -143,8 +138,14 @@ end
 --   nargs = 1,
 -- })
 
--- Optional: Create keymaps (uncomment the lines below if you want default keybindings)
+local function fuzzy_search_i_identifiers()
+  fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers')
+end
 vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
+local function fuzzy_search_headings()
+  fuzzy_search_pattern('^#.*$', 'Headings', 'Headings')
+end
+vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
 -- vim.keymap.set('n', '<leader>fp', function()
 --   vim.ui.input({ prompt = 'Pattern: ' }, function(pattern)
 --     if pattern then fuzzy_search_pattern(pattern, "matches", "Pattern Matches") end
