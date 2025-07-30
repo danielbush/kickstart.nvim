@@ -186,7 +186,9 @@ local function live_multiword_search()
 end
 
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>f', '/(fun)<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
+-- jump titles
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
+-- collapse level 3+
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>\\', 'zmzr', { noremap = true, silent = true })
 -- jump hats
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>H', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
@@ -198,7 +200,6 @@ vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>a', '/#.*r:ACTION_ITEMS\\|#.*.
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>zv', { noremap = true, silent = true })
 -- Jump all alias instances
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
 
 -- Create user commands
 -- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
@@ -225,7 +226,7 @@ vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find
 local function fuzzy_search_ir_identifiers()
   fuzzy_search_pattern('[ir]:[A-Z0-9_]+', 'i/r: identifiers', 'i/r: Identifiers', true)
 end
-vim.keymap.set('n', '<localleader>J', fuzzy_search_ir_identifiers, { desc = 'Find i: identifiers' })
+vim.keymap.set('n', '<localleader>J', fuzzy_search_ir_identifiers, { desc = 'Find i/r: identifiers' })
 
 local function fuzzy_search_headings()
   fuzzy_search_pattern('^#.*$', 'Headings', 'Headings', false)
