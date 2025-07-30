@@ -1,7 +1,7 @@
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>f', '/(fun)<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>\\', 'zmzr', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>H', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ha', '?i:A_HAT<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hi', '?i:I_HAT<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>he', '?i:HE_HAT<CR>zv', { noremap = true, silent = true })
@@ -18,9 +18,9 @@ vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- <CR>', { noremap = tr
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/r:HEADLINE<CR>', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>a', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>c', '/#.*r:CONCERNS<CR>zv', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>i', 'Eyiw/[ir]:<C-R>"<CR>', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
 
 -- Function to find all matches for a given pattern in the current buffer
 local function find_pattern_matches(pattern, pattern_name)
@@ -163,65 +163,6 @@ local function fuzzy_search_pattern(pattern, pattern_name, prompt_title)
   end
 end
 
--- Generic fuzzy search function for multiword searches
-local function fuzzy_search_multiword(search_string, match_name, prompt_title)
-  local matches, display_name = find_multiword_matches(search_string, match_name)
-
-  if #matches == 0 then
-    vim.notify(string.format('No %s found in current buffer', display_name), vim.log.levels.INFO)
-    return
-  end
-
-  -- Check if telescope is available
-  local has_telescope, telescope = pcall(require, 'telescope')
-  if has_telescope then
-    local pickers = require 'telescope.pickers'
-    local finders = require 'telescope.finders'
-    local conf = require('telescope.config').values
-    local actions = require 'telescope.actions'
-    local action_state = require 'telescope.actions.state'
-
-    pickers
-      .new({}, {
-        prompt_title = prompt_title or display_name,
-        finder = finders.new_table {
-          results = matches,
-          entry_maker = function(entry)
-            return {
-              value = entry,
-              display = entry.display,
-              ordinal = entry.text,
-            }
-          end,
-        },
-        sorter = conf.generic_sorter {},
-        attach_mappings = function(prompt_bufnr, map)
-          actions.select_default:replace(function()
-            actions.close(prompt_bufnr)
-            local selection = action_state.get_selected_entry()
-            jump_to_identifier(selection.value)
-          end)
-          return true
-        end,
-      })
-      :find()
-  else
-    -- Fallback to vim.ui.select if Telescope is not available
-    local display_items = {}
-    for _, item in ipairs(matches) do
-      table.insert(display_items, item.display)
-    end
-
-    vim.ui.select(display_items, {
-      prompt = string.format('Select %s:', display_name),
-    }, function(choice, idx)
-      if choice and idx then
-        jump_to_identifier(matches[idx])
-      end
-    end)
-  end
-end
-
 -- Create user commands
 -- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
 --   desc = 'Fuzzy search for i: identifiers in current buffer',
@@ -244,6 +185,7 @@ local function fuzzy_search_i_identifiers()
   fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers')
 end
 vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
+
 local function fuzzy_search_headings()
   fuzzy_search_pattern('^#.*$', 'Headings', 'Headings')
 end
@@ -253,12 +195,7 @@ vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search he
 local function live_multiword_search()
   local has_telescope, telescope = pcall(require, 'telescope')
   if not has_telescope then
-    vim.notify('Telescope not available, falling back to input', vim.log.levels.WARN)
-    vim.ui.input({ prompt = 'Multi-word search: ' }, function(search_string)
-      if search_string and search_string ~= '' then
-        fuzzy_search_multiword(search_string, 'multi-word matches', 'Multi-word Search')
-      end
-    end)
+    vim.notify('Telescope not available', vim.log.levels.WARN)
     return
   end
 
