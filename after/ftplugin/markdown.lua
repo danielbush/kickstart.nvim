@@ -1,18 +1,3 @@
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>f', '/(fun)<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>\\', 'zmzr', { noremap = true, silent = true })
--- jump hats
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>H', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
--- jump checkboxes
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- <CR>', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/r:HEADLINE<CR>', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>a', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true })
--- Jump to i-alias
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>zv', { noremap = true, silent = true })
--- Jump all alias instances
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
-
 -- Function to find all matches for a given pattern in the current buffer
 local function find_pattern_matches(pattern, pattern_name, show_line)
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
@@ -40,49 +25,6 @@ local function find_pattern_matches(pattern, pattern_name, show_line)
   end
 
   return matches, pattern_name or 'matches'
-end
-
--- Function to find lines containing all words (in any order, as whole words)
-local function find_multiword_matches(search_string, match_name)
-  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-  local matches = {}
-
-  -- Split search string into words
-  local words = {}
-  for word in search_string:gmatch '%S+' do
-    table.insert(words, word)
-  end
-
-  if #words == 0 then
-    return matches, match_name or 'matches'
-  end
-
-  for line_num, line in ipairs(lines) do
-    local line_matches_all = true
-
-    -- Check if all words are present as whole words in the line
-    for _, word in ipairs(words) do
-      -- Use Lua pattern matching for whole words with case-insensitive search
-      -- local escaped_word = word:gsub('[%^%$%(%)%%%.%[%]%*%+%-%?]', '%%%1')
-      -- local word_pattern = '%f[%w]' .. escaped_word .. '%f[%W]'
-      -- if not string.find(line:lower(), word_pattern:lower()) then
-      if not string.find(line:lower(), word:lower()) then
-        line_matches_all = false
-        break
-      end
-    end
-
-    if line_matches_all then
-      table.insert(matches, {
-        text = line,
-        line = line_num,
-        col = 1,
-        display = string.format('Line %d: %s', line_num, line),
-      })
-    end
-  end
-
-  return matches, match_name or 'multiword matches'
 end
 
 -- Function to jump to the selected identifier
@@ -154,38 +96,6 @@ local function fuzzy_search_pattern(pattern, pattern_name, prompt_title, show_li
     end)
   end
 end
-
--- Create user commands
--- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
---   desc = 'Fuzzy search for i: identifiers in current buffer',
--- })
-
--- Generic command that accepts a pattern as argument
--- vim.api.nvim_create_user_command('FindPattern', function(opts)
---   local pattern = opts.args
---   if pattern == '' then
---     vim.notify('Please provide a pattern. Usage: :FindPattern <pattern>', vim.log.levels.ERROR)
---     return
---   end
---   fuzzy_search_pattern(pattern, 'matches', 'Pattern Matches')
--- end, {
---   desc = 'Fuzzy search for a custom pattern in current buffer',
---   nargs = 1,
--- })
-
-local function fuzzy_search_i_identifiers()
-  fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers', false)
-end
-vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
-local function fuzzy_search_ir_identifiers()
-  fuzzy_search_pattern('[ir]:[A-Z_]+', 'i/r: identifiers', 'i/r: Identifiers', true)
-end
-vim.keymap.set('n', '<localleader>J', fuzzy_search_ir_identifiers, { desc = 'Find i: identifiers' })
-
-local function fuzzy_search_headings()
-  fuzzy_search_pattern('^#.*$', 'Headings', 'Headings', false)
-end
-vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
 
 -- Multi-word search function with live telescope filtering
 local function live_multiword_search()
@@ -274,6 +184,53 @@ local function live_multiword_search()
     })
     :find()
 end
+
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>f', '/(fun)<CR>zv', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>\\', 'zmzr', { noremap = true, silent = true })
+-- jump hats
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>H', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
+-- jump checkboxes
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- <CR>', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/r:HEADLINE<CR>', { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>a', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true })
+-- Jump to i-alias
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>zv', { noremap = true, silent = true })
+-- Jump all alias instances
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true })
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
+
+-- Create user commands
+-- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
+--   desc = 'Fuzzy search for i: identifiers in current buffer',
+-- })
+
+-- Generic command that accepts a pattern as argument
+-- vim.api.nvim_create_user_command('FindPattern', function(opts)
+--   local pattern = opts.args
+--   if pattern == '' then
+--     vim.notify('Please provide a pattern. Usage: :FindPattern <pattern>', vim.log.levels.ERROR)
+--     return
+--   end
+--   fuzzy_search_pattern(pattern, 'matches', 'Pattern Matches')
+-- end, {
+--   desc = 'Fuzzy search for a custom pattern in current buffer',
+--   nargs = 1,
+-- })
+
+local function fuzzy_search_i_identifiers()
+  fuzzy_search_pattern('i:[A-Z0-9_]+', 'i: identifiers', 'i: Identifiers', false)
+end
+vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
+local function fuzzy_search_ir_identifiers()
+  fuzzy_search_pattern('[ir]:[A-Z0-9_]+', 'i/r: identifiers', 'i/r: Identifiers', true)
+end
+vim.keymap.set('n', '<localleader>J', fuzzy_search_ir_identifiers, { desc = 'Find i: identifiers' })
+
+local function fuzzy_search_headings()
+  fuzzy_search_pattern('^#.*$', 'Headings', 'Headings', false)
+end
+vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
 
 vim.keymap.set('n', '<localleader>w', live_multiword_search, { desc = 'Multi-word search' })
 -- vim.keymap.set('n', '<leader>fp', function()
