@@ -88,7 +88,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = '\\'
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
@@ -1014,6 +1014,12 @@ require('lazy').setup({
 
 vim.g.markdown_folding = 1
 vim.cmd 'set foldexpr=NestedMarkdownFolds()'
+
+-- 2 spaces for markdown
+vim.cmd 'autocmd FileType markdown setlocal shiftwidth=2 softtabstop=2 expandtab'
+
+-- Map <leader>f to search for the word "TODO"
+vim.api.nvim_set_keymap('n', '<leader>f', '/(fun)<CR>', { noremap = true, silent = true })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
