@@ -19,11 +19,11 @@ vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- <CR>', { noremap = tr
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>a', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>c', '/#.*r:CONCERNS<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>i', 'Eyiw/[ir]:<C-R>"<CR>', { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', 'Eyiw/[ir]:<C-R>"<CR>', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
 
 -- Function to find all matches for a given pattern in the current buffer
-local function find_pattern_matches(pattern, pattern_name)
+local function find_pattern_matches(pattern, pattern_name, show_line)
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
   local matches = {}
 
@@ -40,7 +40,8 @@ local function find_pattern_matches(pattern, pattern_name)
         text = match_text,
         line = line_num,
         col = match_start,
-        display = string.format('%s (line %d, col %d)', match_text, line_num, match_start),
+        display = show_line and string.format('%s (line %d, col %d) %s', match_text, line_num, match_start, line)
+          or string.format('%s (line %d, col %d)', match_text, line_num, match_start),
       })
 
       start_pos = match_end + 1
@@ -105,8 +106,8 @@ local function jump_to_identifier(item)
 end
 
 -- Generic fuzzy search function
-local function fuzzy_search_pattern(pattern, pattern_name, prompt_title)
-  local matches, display_name = find_pattern_matches(pattern, pattern_name)
+local function fuzzy_search_pattern(pattern, pattern_name, prompt_title, show_line)
+  local matches, display_name = find_pattern_matches(pattern, pattern_name, show_line)
 
   if #matches == 0 then
     vim.notify(string.format('No %s found in current buffer', display_name), vim.log.levels.INFO)
@@ -182,12 +183,16 @@ end
 -- })
 
 local function fuzzy_search_i_identifiers()
-  fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers')
+  fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers', false)
 end
 vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
+local function fuzzy_search_ir_identifiers()
+  fuzzy_search_pattern('[ir]:[A-Z_]+', 'i/r: identifiers', 'i/r: Identifiers', true)
+end
+vim.keymap.set('n', '<localleader>J', fuzzy_search_ir_identifiers, { desc = 'Find i: identifiers' })
 
 local function fuzzy_search_headings()
-  fuzzy_search_pattern('^#.*$', 'Headings', 'Headings')
+  fuzzy_search_pattern('^#.*$', 'Headings', 'Headings', false)
 end
 vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
 
