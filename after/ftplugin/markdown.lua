@@ -1,25 +1,16 @@
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>f', '/(fun)<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>t', '/^#.*<CR>zv', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>\\', 'zmzr', { noremap = true, silent = true })
+-- jump hats
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>H', '/# i:\\S\\+_HAT\\><CR>', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ha', '?i:A_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hi', '?i:I_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>he', '?i:HE_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hb', '?i:B_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>he', '?i:E_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hd', '?i:D_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hm', '?i:M_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>hu', '?i:MU_HAT<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/ \\[.\\] <CR>', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- \\[.\\] <CR>', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- ....<CR>', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- \\[.\\] \\|^- \\ze[^[]<CR>', { noremap = true, silent = true })
+-- jump checkboxes
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>x', '/^- <CR>', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/r:HEADLINE<CR>', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>a', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>c', '/#.*r:CONCERNS<CR>zv', { noremap = true, silent = true })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', 'Eyiw/[ir]:<C-R>"<CR>', { noremap = true, silent = true })
+-- Jump to i-alias
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>zv', { noremap = true, silent = true })
+-- Jump all alias instances
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true })
 -- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
 
 -- Function to find all matches for a given pattern in the current buffer
