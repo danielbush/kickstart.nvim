@@ -22,11 +22,10 @@ vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>I', 'Eyiw/i:<C-R>"<CR>', { nor
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>i', 'Eyiw/[ir]:<C-R>"<CR>', { noremap = true, silent = true })
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>r', '/[ir]:\\S\\+<CR>', { noremap = true, silent = true })
 
--- Function to find all i: identifiers in the current buffer
-local function find_i_identifiers()
+-- Function to find all matches for a given pattern in the current buffer
+local function find_pattern_matches(pattern, pattern_name)
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-  local identifiers = {}
-  local pattern = 'i:[A-Z_]+'
+  local matches = {}
 
   for line_num, line in ipairs(lines) do
     local start_pos = 1
@@ -36,34 +35,38 @@ local function find_i_identifiers()
         break
       end
 
-      local identifier = string.sub(line, match_start, match_end)
-      table.insert(identifiers, {
-        text = identifier,
+      local match_text = string.sub(line, match_start, match_end)
+      table.insert(matches, {
+        text = match_text,
         line = line_num,
         col = match_start,
-        display = string.format('%s (line %d, col %d)', identifier, line_num, match_start),
+        display = string.format('%s (line %d, col %d)', match_text, line_num, match_start),
       })
 
       start_pos = match_end + 1
     end
   end
 
-  return identifiers
+  return matches, pattern_name or 'matches'
 end
 
 -- Function to jump to the selected identifier
 local function jump_to_identifier(item)
   vim.api.nvim_win_set_cursor(0, { item.line, item.col - 1 })
+
+  -- Open any folds that contain this line
   vim.cmd 'normal! zv'
-  vim.cmd 'normal! zz' -- Center the line on screen
+
+  -- Center the line on screen
+  vim.cmd 'normal! zz'
 end
 
--- Main fuzzy search function
-local function fuzzy_search_i_identifiers()
-  local identifiers = find_i_identifiers()
+-- Generic fuzzy search function
+local function fuzzy_search_pattern(pattern, pattern_name, prompt_title)
+  local matches, display_name = find_pattern_matches(pattern, pattern_name)
 
-  if #identifiers == 0 then
-    vim.notify('No i: identifiers found in current buffer', vim.log.levels.INFO)
+  if #matches == 0 then
+    vim.notify(string.format('No %s found in current buffer', display_name), vim.log.levels.INFO)
     return
   end
 
@@ -78,9 +81,9 @@ local function fuzzy_search_i_identifiers()
 
     pickers
       .new({}, {
-        prompt_title = 'i: Identifiers',
+        prompt_title = prompt_title or display_name,
         finder = finders.new_table {
-          results = identifiers,
+          results = matches,
           entry_maker = function(entry)
             return {
               value = entry,
@@ -103,27 +106,47 @@ local function fuzzy_search_i_identifiers()
   else
     -- Fallback to vim.ui.select if Telescope is not available
     local display_items = {}
-    for _, item in ipairs(identifiers) do
+    for _, item in ipairs(matches) do
       table.insert(display_items, item.display)
     end
 
     vim.ui.select(display_items, {
-      prompt = 'Select i: identifier:',
+      prompt = string.format('Select %s:', display_name),
     }, function(choice, idx)
       if choice and idx then
-        jump_to_identifier(identifiers[idx])
+        jump_to_identifier(matches[idx])
       end
     end)
   end
 end
 
--- Create a user command
-vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
-  desc = 'Fuzzy search for i: identifiers in current buffer',
-})
+-- Specific function for i: identifiers (backwards compatibility)
+local function fuzzy_search_i_identifiers()
+  fuzzy_search_pattern('i:[A-Z_]+', 'i: identifiers', 'i: Identifiers')
+end
 
--- Optional: Create a keymap (uncomment the line below if you want a default keybinding)
+-- Create user commands
+-- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
+--   desc = 'Fuzzy search for i: identifiers in current buffer',
+-- })
+
+-- Generic command that accepts a pattern as argument
+-- vim.api.nvim_create_user_command('FindPattern', function(opts)
+--   local pattern = opts.args
+--   if pattern == '' then
+--     vim.notify('Please provide a pattern. Usage: :FindPattern <pattern>', vim.log.levels.ERROR)
+--     return
+--   end
+--   fuzzy_search_pattern(pattern, 'matches', 'Pattern Matches')
+-- end, {
+--   desc = 'Fuzzy search for a custom pattern in current buffer',
+--   nargs = 1,
+-- })
+
+-- Optional: Create keymaps (uncomment the lines below if you want default keybindings)
 vim.keymap.set('n', '<localleader>j', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
-
--- Return the function so it can be called directly if needed
--- return fuzzy_search_i_identifiers
+-- vim.keymap.set('n', '<leader>fp', function()
+--   vim.ui.input({ prompt = 'Pattern: ' }, function(pattern)
+--     if pattern then fuzzy_search_pattern(pattern, "matches", "Pattern Matches") end
+--   end)
+-- end, { desc = 'Find custom pattern' })
