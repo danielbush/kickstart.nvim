@@ -946,7 +946,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1015,12 +1015,11 @@ require('lazy').setup({
 })
 
 vim.g.markdown_folding = 1
-vim.cmd 'set foldexpr=NestedMarkdownFolds()'
-
 -- 2 spaces for markdown
 vim.cmd 'autocmd FileType markdown setlocal shiftwidth=2 softtabstop=2 expandtab'
 
 vim.api.nvim_set_keymap('n', 'zz', 'za', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'Y', 'yy', { noremap = true, silent = true })
 
 -- Global multi-word search (available in all buffers)
 vim.keymap.set('n', '<leader>w', function()
