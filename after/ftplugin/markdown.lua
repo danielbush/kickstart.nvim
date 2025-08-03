@@ -245,3 +245,69 @@ if true then
   -- Make the function available globally
   _G.markdown_fold = markdown_fold
 end
+
+-- vim.cmd 'syntax match markdownITerm /\\<i:[A-Za-z0-9_]\\+\\>/'
+-- vim.cmd 'syntax match markdownRTerm /\\<r:[A-Za-z0-9_]\\+\\>/'
+
+-- Function to apply custom syntax highlighting
+local function apply_custom_syntax()
+  vim.cmd [[syntax match markdownITerm /\<i:[A-Za-z0-9_]\+\>/]]
+  vim.cmd [[syntax match markdownRTerm /\<r:[A-Za-z0-9_]\+\>/]]
+  vim.cmd [[syntax match markdownHatTerm /\<r:[A-Za-z0-9_]\+_HAT\>/]]
+  print 'Applied custom i: and r: syntax highlighting'
+end
+
+-- Expose as a command I can run in the buffer - because I had trouble getting the syntax highlighting to trigger automatically.
+-- Create a buffer-local command
+vim.api.nvim_buf_create_user_command(0, 'MarkdownCustomSyntax', apply_custom_syntax, {
+  desc = 'Apply custom syntax highlighting for i:TERM and r:TERM patterns',
+})
+
+-- Optional: Create a shorter alias
+vim.api.nvim_buf_create_user_command(0, 'MCS', apply_custom_syntax, {
+  desc = 'Apply custom syntax highlighting for i:TERM and r:TERM patterns (short alias)',
+})
+
+-- Define highlight groups with different colors
+-- You can customize these colors to your preference
+vim.api.nvim_set_hl(0, 'markdownRTerm', {
+  ctermfg = 'cyan',
+  fg = '#3399ee',
+  bold = true,
+})
+vim.api.nvim_set_hl(0, 'markdownITerm', {
+  ctermfg = 'yellow',
+  fg = '#cc9955',
+  bold = true,
+})
+vim.api.nvim_set_hl(0, 'markdownHatTerm', {
+  ctermfg = 'yellow',
+  fg = '#bbcc55',
+  bold = true,
+})
+
+--
+-- This appears to work to autoload:
+
+-- Auto-apply the syntax highlighting after everything is loaded
+local augroup = vim.api.nvim_create_augroup('MarkdownCustomSyntaxAuto', { clear = true })
+
+-- Use VimEnter with a small delay to ensure all syntax is loaded
+vim.api.nvim_create_autocmd('VimEnter', {
+  group = augroup,
+  pattern = '*',
+  callback = function()
+    if vim.bo.filetype == 'markdown' then
+      vim.defer_fn(apply_custom_syntax, 100) -- 100ms delay
+    end
+  end,
+})
+
+-- Also apply when opening new markdown buffers
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  group = augroup,
+  pattern = '*.md',
+  callback = function()
+    vim.defer_fn(apply_custom_syntax, 50) -- 100ms delay
+  end,
+})
