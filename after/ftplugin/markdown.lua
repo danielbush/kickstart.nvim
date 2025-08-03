@@ -3,7 +3,7 @@ local search_utils = require 'search_utils'
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gf', '/(fun)<CR>zv', { noremap = true, silent = true, desc = '(fun)' })
 -- jump headings
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gh', '/^#.*<CR>zv', { noremap = true, silent = true, desc = 'Jump headings' })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gt', '/r:TARGETS<CR>zv', { noremap = true, silent = true, desc = 'Jump targets' })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gt', '/# r:TARGETS<CR>zv', { noremap = true, silent = true, desc = 'Jump targets' })
 -- collapse level 3+
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>,', 'zmzr', { noremap = true, silent = true, desc = 'Collapse level3+' })
 -- jump hats
@@ -15,7 +15,8 @@ vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ga', '/#.*r:ACTION_ITEMS\\|#.*
 -- Jump to i-alias
 vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gi', 'Eyiw/i:<C-R>"\\><CR>zv', { noremap = true, silent = true, desc = 'Jump to i-alias' })
 -- Jump all alias instances
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gr', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true, desc = 'Jump to i/r-aliases' })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gr', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true, desc = 'Jump selected i/r-alias' })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gn', '/[ir]:[A-Za-z0-9_]\\+<CR>zv', { noremap = true, silent = true, desc = 'Jump next i/r-alias' })
 
 -- Create user commands
 -- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
@@ -276,8 +277,8 @@ vim.api.nvim_set_hl(0, 'markdownRTerm', {
   bold = true,
 })
 vim.api.nvim_set_hl(0, 'markdownITerm', {
-  ctermfg = 'yellow',
-  fg = '#cc9955',
+  ctermfg = 'magenta',
+  fg = '#cc99cc',
   bold = true,
 })
 vim.api.nvim_set_hl(0, 'markdownHatTerm', {
