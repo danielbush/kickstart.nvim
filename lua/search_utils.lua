@@ -42,6 +42,84 @@ function M.jump_to_identifier(item)
   vim.cmd 'normal! zz'
 end
 
+-- Function to insert selected text at cursor position
+function M.insert_at_cursor(item)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local line_num = cursor_pos[1]
+  local col_num = cursor_pos[2]
+  
+  -- Get the current line
+  local current_line = vim.api.nvim_get_current_line()
+  
+  -- Insert the text at cursor position
+  local new_line = string.sub(current_line, 1, col_num) .. item.text .. string.sub(current_line, col_num + 1)
+  
+  -- Set the modified line
+  vim.api.nvim_set_current_line(new_line)
+  
+  -- Move cursor to end of inserted text
+  vim.api.nvim_win_set_cursor(0, { line_num, col_num + string.len(item.text) })
+end
+
+-- Generic fuzzy search function for inserting at cursor
+function M.fuzzy_search_pattern_insert(pattern, pattern_name, prompt_title, show_line)
+  local matches, display_name = M.find_pattern_matches(pattern, pattern_name, show_line)
+
+  if #matches == 0 then
+    vim.notify(string.format('No %s found in current buffer', display_name), vim.log.levels.INFO)
+    return
+  end
+
+  -- Check if telescope is available
+  local has_telescope, telescope = pcall(require, 'telescope')
+  if has_telescope then
+    local pickers = require 'telescope.pickers'
+    local finders = require 'telescope.finders'
+    local conf = require('telescope.config').values
+    local actions = require 'telescope.actions'
+    local action_state = require 'telescope.actions.state'
+
+    pickers
+      .new({}, {
+        prompt_title = prompt_title or display_name,
+        finder = finders.new_table {
+          results = matches,
+          entry_maker = function(entry)
+            return {
+              value = entry,
+              display = entry.display,
+              ordinal = entry.text,
+            }
+          end,
+        },
+        sorter = conf.generic_sorter {},
+        attach_mappings = function(prompt_bufnr, map)
+          actions.select_default:replace(function()
+            actions.close(prompt_bufnr)
+            local selection = action_state.get_selected_entry()
+            M.insert_at_cursor(selection.value)
+          end)
+          return true
+        end,
+      })
+      :find()
+  else
+    -- Fallback to vim.ui.select if Telescope is not available
+    local display_items = {}
+    for _, item in ipairs(matches) do
+      table.insert(display_items, item.display)
+    end
+
+    vim.ui.select(display_items, {
+      prompt = string.format('Select %s to insert:', display_name),
+    }, function(choice, idx)
+      if choice and idx then
+        M.insert_at_cursor(matches[idx])
+      end
+    end)
+  end
+end
+
 -- Generic fuzzy search function
 function M.fuzzy_search_pattern(pattern, pattern_name, prompt_title, show_line)
   local matches, display_name = M.find_pattern_matches(pattern, pattern_name, show_line)

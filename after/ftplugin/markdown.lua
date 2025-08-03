@@ -39,7 +39,7 @@ local function fuzzy_search_i_identifiers()
   search_utils.fuzzy_search_pattern('i:[A-Z0-9_]+', 'i: identifiers', 'i: Identifiers', false)
 end
 vim.keymap.set('n', '<localleader>fi', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
-vim.keymap.set('n', '<localleader>i', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
+-- vim.keymap.set('n', '<localleader>i', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
 
 local function fuzzy_search_ir_identifiers()
   search_utils.fuzzy_search_pattern('[ir]:[A-Z0-9_]+', 'i/r: identifiers', 'i/r: Identifiers', true)
@@ -51,6 +51,11 @@ local function fuzzy_search_headings()
 end
 vim.keymap.set('n', '<localleader>fh', fuzzy_search_headings, { desc = 'Search headings' })
 vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
+
+local function fuzzy_insert_i_identifiers()
+  search_utils.fuzzy_search_pattern_insert('i:[A-Z0-9_]+', 'i: identifiers', 'Insert i: Identifiers', false)
+end
+vim.keymap.set('n', '<localleader>ii', fuzzy_insert_i_identifiers, { desc = 'Insert i: identifiers' })
 -- vim.keymap.set('n', '<leader>fp', function()
 --   vim.ui.input({ prompt = 'Pattern: ' }, function(pattern)
 --     if pattern then fuzzy_search_pattern(pattern, "matches", "Pattern Matches") end
