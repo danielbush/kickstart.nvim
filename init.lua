@@ -1014,12 +1014,16 @@ require('lazy').setup({
   },
 })
 
+-- My modifications
+
 vim.g.markdown_folding = 1
 -- 2 spaces for markdown
 vim.cmd 'autocmd FileType markdown setlocal shiftwidth=2 softtabstop=2 expandtab'
 
 vim.api.nvim_set_keymap('n', 'zz', 'za', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'Y', 'yy', { noremap = true, silent = true })
+-- Disable mouse completely
+vim.opt.mouse = ''
 
 -- Global multi-word search (available in all buffers)
 vim.keymap.set('n', '<leader>w', function()
