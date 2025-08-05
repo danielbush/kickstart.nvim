@@ -1,23 +1,5 @@
 local search_utils = require 'search_utils'
 
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gf', '/(fun)<CR>zv', { noremap = true, silent = true, desc = '(fun)' })
--- jump headings
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gh', '/^#.*<CR>zv', { noremap = true, silent = true, desc = 'Jump headings' })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gt', '/# r:TARGETS<CR>zv', { noremap = true, silent = true, desc = 'Jump targets' })
--- collapse level 3+
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>,', 'zmzr', { noremap = true, silent = true, desc = 'Collapse level3+' })
--- jump hats
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gH', '/# i:\\S\\+_HAT\\><CR>zv', { noremap = true, silent = true, desc = 'Jump hats' })
--- jump checkboxes
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gx', '/^- <CR>zv', { noremap = true, silent = true, desc = 'Jump checkboxes' })
--- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>h', '/r:HEADLINE<CR>', { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ga', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true, desc = 'Jump action items' })
--- Jump to i-alias
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gi', 'Eyiw/i:<C-R>"\\><CR>zv', { noremap = true, silent = true, desc = 'Jump to i-alias' })
--- Jump all alias instances
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gr', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true, desc = 'Jump selected i/r-alias' })
-vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gn', '/[ir]:[A-Za-z0-9_]\\+<CR>zv', { noremap = true, silent = true, desc = 'Jump next i/r-alias' })
-
 -- Create user commands
 -- vim.api.nvim_create_user_command('FindIIdentifiers', fuzzy_search_i_identifiers, {
 --   desc = 'Fuzzy search for i: identifiers in current buffer',
@@ -39,29 +21,22 @@ vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gn', '/[ir]:[A-Za-z0-9_]\\+<CR
 local function fuzzy_search_i_identifiers()
   search_utils.fuzzy_search_pattern('i:[A-Z0-9_]+', 'i: identifiers', 'i: Identifiers', false)
 end
-vim.keymap.set('n', '<localleader>fi', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
--- vim.keymap.set('n', '<localleader>i', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
 
 local function fuzzy_search_ir_identifiers()
   search_utils.fuzzy_search_pattern('[ir]:[A-Z0-9_]+', 'i/r: identifiers', 'i/r: Identifiers', true)
 end
-vim.keymap.set('n', '<localleader>fr', fuzzy_search_ir_identifiers, { desc = 'Find i/r: identifiers' })
+
+-- local function fuzzy_search_action_items()
+--   search_utils.fuzzy_search_pattern('^#.*ACTION_ITEMS .*$', 'Select action items', 'Select action items', false)
+-- end
 
 local function fuzzy_search_headings()
   search_utils.fuzzy_search_pattern('^#.*$', 'Headings', 'Headings', false)
 end
-vim.keymap.set('n', '<localleader>fh', fuzzy_search_headings, { desc = 'Search headings' })
-vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
 
 local function fuzzy_insert_i_identifiers()
   search_utils.fuzzy_search_pattern_insert_convert_i_to_r('i:[A-Z0-9_]+', 'i: identifiers', 'Insert r: Identifiers', false)
 end
-vim.keymap.set('n', '<localleader>ii', fuzzy_insert_i_identifiers, { desc = 'Insert r: identifiers' })
--- vim.keymap.set('n', '<leader>fp', function()
---   vim.ui.input({ prompt = 'Pattern: ' }, function(pattern)
---     if pattern then fuzzy_search_pattern(pattern, "matches", "Pattern Matches") end
---   end)
--- end, { desc = 'Find custom pattern' })
 
 --------------------------------------------------------------------------------
 -- Folding
@@ -305,10 +280,49 @@ vim.api.nvim_create_autocmd('VimEnter', {
 })
 
 -- Also apply when opening new markdown buffers
-vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile', 'BufEnter' }, {
   group = augroup,
   pattern = '*.md',
   callback = function()
-    vim.defer_fn(apply_custom_syntax, 50) -- 100ms delay
+    vim.defer_fn(apply_custom_syntax, 100) -- 100ms delay
   end,
 })
+
+-- (fun)
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gf', '/(fun)<CR>zv', { noremap = true, silent = true, desc = '(fun)' })
+
+-- jump headings
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gh', '/^#.*<CR>zv', { noremap = true, silent = true, desc = 'Jump headings' })
+-- vim.keymap.set('n', '<localleader>fh', fuzzy_search_headings, { desc = 'Search headings' })
+vim.keymap.set('n', '<localleader>h', fuzzy_search_headings, { desc = 'Search headings' })
+
+-- targets
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gt', '/#.*r:TARGETS\\|^r:TARGETS<CR>zv', { noremap = true, silent = true, desc = 'Jump targets' })
+
+-- collapse level 3+
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>,', 'zmzr', { noremap = true, silent = true, desc = 'Collapse level3+' })
+
+-- jump hats
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gH', '/# i:\\S\\+_HAT\\><CR>zv', { noremap = true, silent = true, desc = 'Jump hats' })
+
+-- jump checkboxes
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>gx', '/^- <CR>zv', { noremap = true, silent = true, desc = 'Jump checkboxes' })
+
+-- action items
+-- vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ga', '/#.*r:ACTION_ITEMS\\|#.*.:PLANNER<CR>zv', { noremap = true, silent = true, desc = 'Jump action items' })
+-- vim.keymap.set('n', '<localleader>fa', fuzzy_search_action_items, { desc = 'Search action items' })
+-- vim.keymap.set('n', '<localleader>a', fuzzy_search_action_items, { desc = 'Search action items' })
+
+-- vim.keymap.set('n', '<leader>fp', function()
+--   vim.ui.input({ prompt = 'Pattern: ' }, function(pattern)
+--     if pattern then fuzzy_search_pattern(pattern, "matches", "Pattern Matches") end
+--   end)
+-- end, { desc = 'Find custom pattern' })
+
+-- i/r identifiers
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>ji', 'Eyiw/i:<C-R>"\\><CR>zv', { noremap = true, silent = true, desc = 'Jump to i-alias' })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>jr', 'Eyiw/[ir]:<C-R>"<CR>zv', { noremap = true, silent = true, desc = 'Jump selected i/r-alias' })
+vim.api.nvim_buf_set_keymap(0, 'n', '<localleader>jn', '/[ir]:[A-Za-z0-9_]\\+<CR>zv', { noremap = true, silent = true, desc = 'Jump next i/r-alias' })
+vim.keymap.set('n', '<localleader>jj', fuzzy_search_i_identifiers, { desc = 'Find i: identifiers' })
+vim.keymap.set('n', '<localleader>ii', fuzzy_insert_i_identifiers, { desc = 'Insert r: identifiers' })
+-- vim.keymap.set('n', '<localleader>igr', fuzzy_search_ir_identifiers, { desc = 'Find i/r: identifiers' })
