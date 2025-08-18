@@ -896,7 +896,21 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
+    end,
+  },
+  {
+    'navarasu/onedark.nvim',
+    -- 'rebelot/kanagawa.nvim',
+    -- 'scottmckendry/cyberdream.nvim',
+    -- 'olimorris/onedarkpro.nvim',
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'onedark'
+      -- vim.cmd.colorscheme 'kanagawa-dragon'
+      -- vim.cmd.colorscheme 'cyberdream'
+      -- vim.cmd.colorscheme 'onedark_vivid'
+      -- vim.cmd.colorscheme 'wildcharm'
     end,
   },
 
@@ -946,7 +960,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'yaml' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1021,9 +1035,13 @@ vim.g.markdown_folding = 1
 vim.cmd 'autocmd FileType markdown setlocal shiftwidth=2 softtabstop=2 expandtab'
 
 vim.api.nvim_set_keymap('n', 'zz', 'za', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'Y', 'yy', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', 'Y', 'yy', { noremap = true, silent = true })
 -- Disable mouse completely
 vim.opt.mouse = ''
+
+vim.g.netrw_sort_by = 'time'
+vim.g.netrw_sort_direction = 'reverse'
+vim.g.netrw_liststyle = 1
 
 -- Global multi-word search (available in all buffers)
 vim.keymap.set('n', '<leader>w', function()
