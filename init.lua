@@ -906,6 +906,7 @@ require('lazy').setup({
     -- 'olimorris/onedarkpro.nvim',
     priority = 1000,
     config = function()
+      -- vim.cmd.colorscheme 'habamax'
       vim.cmd.colorscheme 'onedark'
       -- vim.cmd.colorscheme 'kanagawa-dragon'
       -- vim.cmd.colorscheme 'cyberdream'
